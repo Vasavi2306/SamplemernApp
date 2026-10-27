@@ -14,15 +14,23 @@ let express=require('express');
    let data=req.body;
    let emailcheck=await users.findOne({email:data.email});
   if (emailcheck){
-   let passcheck=await bcrypt.compare(data.password,emailcheck.password);
-   if(passcheck){
-      res.send("login successful")
+   let matchpass=await bcrypt.compare(data.password,emailcheck.password);
+   if(matchpass){
+      res.send({
+         "message":"login success",
+          user:{
+            _id: emailcheck._id,
+            name: emailcheck.name,
+            email: emailcheck.email,
+            role: emailcheck.role
+          }
+         });
    }else{
-      res.send("wrong password")
+      res.send({"message":"invalid credentials"});
    }
 
   }else{
-   res.send("user not found");
+   res.send({"message":"user not found"});
   }
 
 
